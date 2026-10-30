@@ -1,0 +1,24 @@
+name: 定时签到任务
+on:
+  schedule:
+    - cron: '0 8 * * *'
+      timezone: "Asia/Shanghai"
+  workflow_dispatch:
+
+jobs:
+  run-sign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 配置Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 运行签到脚本
+        run: python main.py
