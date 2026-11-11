@@ -1,0 +1,50 @@
+name: Qoder CN Daily Sign-in
+
+on:
+  schedule:
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sign-in:
+    runs-on: ubuntu-latest
+
+    env:
+      QODER_TOKEN_1: ${{ secrets.QODER_TOKEN_1 }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Run Qoder sign-in
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          CONFIG_FILE="$RUNNER_TEMP/qoder-accounts.json"
+
+          cat > "$CONFIG_FILE" <<'JSON'
+          {
+            "accounts": [
+              {
+                "name": "账号一",
+                "token_env": "QODER_TOKEN_1",
+                "enabled": true
+              }"enabled": true
+              }
+            ]
+          }
+          JSON
+
+          python qoder_signin.py \
+            --config "$CONFIG_FILE" \
+            run \
+            --interval 3
