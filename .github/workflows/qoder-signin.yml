@@ -2,7 +2,11 @@ name: Qoder CN Daily Sign-in
 
 on:
   schedule:
-    - cron: "0 13 * * *"
+    # 北京时间每天 10:05 执行
+    # GitHub 使用 UTC，02:05 UTC = 北京时间 10:05
+    - cron: "5 13 * * *"
+
+  # 允许在网页上手动执行
   workflow_dispatch:
 
 permissions:
@@ -11,6 +15,7 @@ permissions:
 jobs:
   sign-in:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     env:
       QODER_TOKEN_1: ${{ secrets.QODER_TOKEN_1 }}
@@ -29,6 +34,7 @@ jobs:
         run: |
           set -euo pipefail
 
+          umask 077
           CONFIG_FILE="$RUNNER_TEMP/qoder-accounts.json"
 
           cat > "$CONFIG_FILE" <<'JSON'
@@ -38,7 +44,6 @@ jobs:
                 "name": "账号一",
                 "token_env": "QODER_TOKEN_1",
                 "enabled": true
-              }"enabled": true
               }
             ]
           }
