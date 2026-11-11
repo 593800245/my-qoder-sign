@@ -1,24 +1,53 @@
-name: 定时签到任务
+name: Qoder CN Daily Sign-in
+
 on:
   schedule:
-    - cron: '0 8 * * *'
-      timezone: "Asia/Shanghai"
+    # 北京时间每天 10:05，GitHub Actions 使用 UTC
+    - cron: '35 11 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  run-sign:
+  sign-in:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      QODER_TOKEN_1: ${{ secrets.QODER_TOKEN_1 }}
+
     steps:
-      - name: 拉取代码
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: 配置Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: '3.11'
 
-      - name: 安装依赖
-        run: pip install -r requirements.txt
+      - name: Run Qoder sign-in
+        shell: bash
+        run: |
+          set -euo pipefail
 
-      - name: 运行签到脚本
-        run: python main.py
+          # 临时配置文件只保存环境变量名称，不保存真实 token
+          umask 077
+          config="$RUNNER_TEMP/qoder-accounts.json"
+
+          cat > "$config" <<'JSON'
+          {
+            "accounts": [
+              {
+                "name": "账号一",
+                "token_env": "QODER_TOKEN_1",
+                "enabled": true
+              }
+            ]
+          }
+          JSON
+
+          python qoder_signin.py \
+            --config "$config" \
+            run \
+            --interval 3
