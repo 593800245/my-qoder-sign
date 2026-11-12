@@ -4,7 +4,8 @@ on:
   schedule:
     # 北京时间每天 14:30 执行
     # GitHub 使用 UTC：06:30 UTC = 北京时间 14:30
-    - cron: "30 6 * * *"
+    - cron: "0 15 * * *"
+      timezone: "Asia/Shanghai"
 
   # 允许在网页上手动执行
   workflow_dispatch:
