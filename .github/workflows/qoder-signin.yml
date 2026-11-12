@@ -2,9 +2,9 @@ name: Qoder CN Daily Sign-in
 
 on:
   schedule:
-    # 北京时间每天 10:05 执行
-    # GitHub 使用 UTC，02:05 UTC = 北京时间 10:05
-    - cron: "20 13 * * *"
+    # 北京时间每天 14:30 执行
+    # GitHub 使用 UTC：06:30 UTC = 北京时间 14:30
+    - cron: "30 6 * * *"
 
   # 允许在网页上手动执行
   workflow_dispatch:
